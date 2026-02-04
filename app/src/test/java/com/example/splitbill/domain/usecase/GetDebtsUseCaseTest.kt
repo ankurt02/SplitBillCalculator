@@ -16,8 +16,11 @@ class FakeRepository : SplitBillRepository {
     override fun getAllPeople() = flowOf(emptyList<Person>())
     override suspend fun addPerson(name: String) {}
     override suspend fun getPersonById(id: Long) = null
+    override suspend fun getPersonByName(name: String) = null
     override fun getAllExpenses() = flowOf(emptyList<Expense>())
     override suspend fun addExpense(expense: Expense) {}
+    override suspend fun updateExpense(expense: Expense) {}
+    override suspend fun getExpenseById(id: Long) = null
 }
 
 class GetDebtsUseCaseTest {
@@ -33,7 +36,7 @@ class GetDebtsUseCaseTest {
                 description = "Lunch",
                 amount = 100.0,
                 payerId = 1, // A
-                involvedPersonIds = listOf(1, 2) // A and B split
+                shares = mapOf(1L to 50.0, 2L to 50.0) // A and B split 100 equally
             )
         )
         // Split: A pays 100. Share is 50.
@@ -46,15 +49,15 @@ class GetDebtsUseCaseTest {
         // OR we just use the public invoke but we need to mock repository flows properly.
         // For this test, I'll access the private method via reflection or just trust the logic if public.
         // Wait, I made it private but commented "Public for testing". I should change it or use invoke.
-        
+
         // Let's use invoke with mocked flows for better integration test style.
         val repo = object : SplitBillRepository by FakeRepository() {
             override fun getAllPeople() = flowOf(people)
             override fun getAllExpenses() = flowOf(expenses)
         }
-        
+
         val debts = GetDebtsUseCase(repo).invoke().first()
-        
+
         assertEquals(1, debts.size)
         val debt = debts[0]
         assertEquals(2L, debt.fromPersonId) // B
@@ -65,12 +68,12 @@ class GetDebtsUseCaseTest {
     @Test
     fun `test debt netting - A owes B 100, B owes A 80`() = runBlocking {
         val people = listOf( Person(1, "A"), Person(2, "B") )
-        
+
         // A owes B 100 => B paid 100 for A (only A involved)
-        val exp1 = Expense(description = "X", amount = 100.0, payerId = 2, involvedPersonIds = listOf(1))
-        
+        val exp1 = Expense(description = "X", amount = 100.0, payerId = 2, shares = mapOf(1L to 100.0))
+
         // B owes A 80 => A paid 80 for B (only B involved)
-        val exp2 = Expense(description = "Y", amount = 80.0, payerId = 1, involvedPersonIds = listOf(2))
+        val exp2 = Expense(description = "Y", amount = 80.0, payerId = 1, shares = mapOf(2L to 80.0))
 
         // Calc:
         // A: 
@@ -81,7 +84,7 @@ class GetDebtsUseCaseTest {
         //   Exp1: +100 (paid)
         //   Exp2: -80 (consumed)
         //   Net: +20
-        
+
         // Result: A owes B 20.
 
         val repo = object : SplitBillRepository by FakeRepository() {
