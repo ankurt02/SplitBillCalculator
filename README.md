@@ -42,13 +42,8 @@ Stop doing math on napkins—let the app handle "who owes who" with its smart de
 
 ## TODO / Roadmap
 
-- [ ] **Groups Support**: Create multiple independent groups (e.g., "Trip to Vegas", "Apartment Rent").
-- [ ] **Detailed Debt History**: View a log of all settlements and payments.
-- [ ] **Data Export**: Export report as PDF or CSV.
+- [ ] **Groups Support**: Create multiple independent groups.
+- [ ] **History**: View a log of all settlements and payments.
 - [ ] **Currency Support**: Support for multiple currencies.
 - [ ] **Graphs & Analytics**: Visual breakdown of spending by category or person.
 - [ ] **Cloud Sync**: Sync data across devices using Firebase or a backend.
-
-## 🤝 Contribution
-
-Feel free to fork this repository and submit pull requests!
