@@ -4,7 +4,7 @@ A modern, efficient Android application built with **Kotlin** and **Jetpack Comp
 
 Stop doing math on napkins—let the app handle "who owes who" with its smart debt simplification algorithm!
 
-## 🚀 Features
+## Features
 
 ### 👥 People Management
 - Add and manage a list of people involved in the group.
